@@ -43,3 +43,42 @@ Vitest 是一个由 Vite 提供支持的极速单元测试框架。
 - 通过 c8 来输出代码测试覆盖率
 - 类似于 Rust 语言的 源码内联测试
 
+## 安装
+
+通过运行下列命令进行安装
+
+```shell
+npm i vitest@latest -D
+```
+
+or
+
+```shell
+pnpm add vitest@latest -D
+```
+
+## 使用
+
+```javascript
+function sayHello() {
+  return "Hello World";
+}
+
+test("hello world", () => {
+  expect(sayHello()).toBe("Hello World");
+});
+```
+
+在进行单元测试测试时的基本使用思路时：对测试模块进行断言 -> 收集<strong>期望值</strong> -> <strong>期望值</strong>和<strong>实际值</strong>进行比较 -> 输出测试结果
+
+<br />
+
+在上述代码中可以看出，`sayHello` 函数便是我们需要进行测试的模块，`test` 函数是单个测试用例，`expect` 是对 `sayHello` 进行断言，`toBe` 则是用来比较的方法（另外还有 `toBeCloseTo`，`toEqual` 等），`toBe` 的参数 `"Hello World"` 便是期望值，运行 `npx vitest run` 执行测试并查看结果。
+
+```shell
+ √ __test__/1.test.ts (1)
+
+Test Files  1 passed (1)
+     Tests  1 passed (1)
+      Time  901ms (in thread 2ms, 45034.73%)
+```

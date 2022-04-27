@@ -261,6 +261,42 @@ describe("Button", () => {
 - `afterEach(cleanup);` 用于在每个测试用例之后卸载组件
 - `render` 接口用于渲染待测试组件
 
+## 快照测试
+
+`snapshot` (快照) 对于 UI 的测试非常有用，我们可以清晰的看见两次测试之间 UI 是否发生了变化，如果没有变化则测试成功，如果产生了变化则测试失败。
+
+```ts
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import { test, expect } from "vitest";
+import matchers from "@testing-library/jest-dom/matchers";
+import Button from "../src/button";
+
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
+expect.extend(matchers);
+
+test("Button snapshot", () => {
+  render(<Button text="button" />);
+  expect(screen.getByRole("button")).toMatchSnapshot();
+});
+```
+
+## 测试覆盖率
+
+通过执行 `npx vitest --coverage` 命令可以在控制面板得到下列所示的内容，可以看出各个测试内容的测试情况。同时还会在根目录生成一个 `coverage` 的文件夹，运行其中的 `index.html` 可以访问到测试结果网页。
+
+```shell
+------------|---------|----------|---------|---------|-------------------
+File        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+------------|---------|----------|---------|---------|-------------------
+All files   |     100 |      100 |     100 |     100 |
+ basic.ts   |     100 |      100 |     100 |     100 |
+ button.tsx |     100 |      100 |     100 |     100 |
+ index.ts   |     100 |      100 |     100 |     100 |
+------------|---------|----------|---------|---------|-------------------
+```
+
 ## 文章参考
 
 - [十分鐘上手前端單元測試 - 使用 Jest](https://www.casper.tw/development/2020/02/02/jest-intro/)

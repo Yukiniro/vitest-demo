@@ -2,7 +2,6 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    open: true,
-    environment: "node",
+    environment: "happy-dom"
   },
 });

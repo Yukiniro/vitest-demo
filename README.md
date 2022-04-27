@@ -60,7 +60,7 @@ pnpm add vitest@latest -D
 
 安装 `vitest` 后在根目录下创建 `__test__` 文件夹（ `vitest` 会自动读取 `__test__`、`test` 文件夹或者文件名字含有 `.test.` 的文件进行测试），然后在文件夹内创建一个 `1.test.ts` 文件，内容如下：
 
-```javascript
+```ts
 import { describe, test, expect } from "vitest";
 
 function sayHello() {
@@ -104,7 +104,7 @@ PASS  Waiting for file changes...
 
 ## 基本测试
 
-```javascript
+```ts
 import { test, expect } from "vitest";
 
 // passed
@@ -136,15 +136,72 @@ test.skip("skip test", () => {
 
 ## DOM 测试
 
-```javascript
+`vitest` 内置了对 `happy-dom` 和 `jsdom` 的支持，不过这两个库都需要额外安装，以 `happy-dom` 举例。首先是安装相关库。
 
+```
+pnpm add happy-dom @testing-library/dom @testing-library/jest-dom -D
+```
+
+`@testing-library/dom` 提供对 `dom` 的查询，`@testing-library/jest-dom` 提供对 `expect` 接口的增强。
+
+```ts
+/**
+ * @vitest-environment happy-dom
+ */
+
+import { Window } from "happy-dom";
+import { test, expect } from "vitest";
+import { getByText } from "@testing-library/dom";
+import matchers from "@testing-library/jest-dom/matchers";
+
+expect.extend(matchers);
+
+function sayHello(dom: Element) {
+  dom.innerHTML = "hello world";
+}
+
+const window = new Window();
+const document = window.document;
+document.body.innerHTML = '<div class="container"></div>';
+
+const container = document.querySelector(".container");
+sayHello(container as unknown as Element);
+
+// passed
+test("sayHello toBe", () => {
+  expect(container.innerHTML).toBe("hello world");
+});
+
+// passed
+test("sayHello toContainHTML", () => {
+  // toContainHTML 由 @testing-library/jest-dom/matchers 提供
+  expect(container).toContainHTML("hello world");
+});
+
+// passed
+test("sayHello getByText", () => {
+  // getByText 由 @testing-library/dom 提供
+  expect(
+    getByText(container as unknown as HTMLElement, "hello world")
+  ).not.toBeEmptyDOMElement();
+});
+```
+
+上述代码中的 `@vitest-environment happy-dom` 是配置代码，指定当前文件的测试环境，也可以在 `vitest.config.js` (全局配置)进行配置
+
+```js
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    environment: "happy-dom", // happy-dom, jsdom, node
+  },
+});
 ```
 
 ## 组件测试
 
 ## Mock 测试
-
-## Setup
 
 ## 文章参考
 

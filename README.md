@@ -23,7 +23,6 @@
 - 输出测试覆盖率
 - 自动化测试
 
-
 ## `Vitest` 是什么？
 
 Vitest 是一个由 Vite 提供支持的极速单元测试框架。
@@ -57,28 +56,97 @@ or
 pnpm add vitest@latest -D
 ```
 
-## 使用
+## 基本使用
+
+安装 `vitest` 后在根目录下创建 `__test__` 文件夹（ `vitest` 会自动读取 `__test__`、`test` 文件夹或者文件名字含有 `.test.` 的文件进行测试），然后在文件夹内创建一个 `1.test.ts` 文件，内容如下：
 
 ```javascript
+import { describe, test, expect } from "vitest";
+
 function sayHello() {
   return "Hello World";
 }
 
-test("hello world", () => {
+test("test sayHello", () => {
   expect(sayHello()).toBe("Hello World");
+});
+
+describe("test", () => {
+  test("test 1", () => {
+    expect(1).toBe(1);
+  });
+  test("test 2", () => {
+    expect(1).not.toBe(1);
+  });
 });
 ```
 
-在进行单元测试测试时的基本使用思路时：对测试模块进行断言 -> 收集<strong>期望值</strong> -> <strong>期望值</strong>和<strong>实际值</strong>进行比较 -> 输出测试结果
+然后运行 `npx vitest` 命令执行测试脚本，下列是控制台输出的测试结果，会显示对哪些文件进行了测试，测试通过的情况及运行时间。
+
+```shell
+RERUN  __test__/1.test.ts
+
+√ __test__/1.test.ts (3)
+
+Test Files  1 passed (1)
+     Tests  3 passed (3)
+      Time  5ms
+
+
+PASS  Waiting for file changes...
+```
+
+在进行单元测试测试时的基本使用思路时：对测试模块进行断言 -> 指定<strong>期望值</strong> -> <strong>期望值</strong>和<strong>实际值</strong>进行比较 -> 输出测试结果
 
 <br />
 
-在上述代码中可以看出，`sayHello` 函数便是我们需要进行测试的模块，`test` 函数是单个测试用例，`expect` 是对 `sayHello` 进行断言，`toBe` 则是用来比较的方法（另外还有 `toBeCloseTo`，`toEqual` 等），`toBe` 的参数 `"Hello World"` 便是期望值，运行 `npx vitest run` 执行测试并查看结果。
+在上述代码中可以看出，`sayHello` 函数便是我们需要进行测试的模块， `test` 函数是单个测试用例，`describe` 可以组织多个测试用例，`expect` 是对 `sayHello` 进行断言，`toBe` 则是用来比较的方法（另外还有 `toBeCloseTo`，`toEqual` 等），`toBe` 的参数 `"Hello World"` 便是期望值。
 
-```shell
- √ __test__/1.test.ts (1)
+## 基本测试
 
-Test Files  1 passed (1)
-     Tests  1 passed (1)
-      Time  901ms (in thread 2ms, 45034.73%)
+```javascript
+import { test, expect } from "vitest";
+
+// passed
+test("toBeNull", () => {
+  expect(null).toBeNull();
+});
+
+// passed
+test("toBeNull", () => {
+  expect(true).not.toBeNull();
+});
+
+// passed
+test("toBeTypeOf", () => {
+  expect("Hello").toBeTypeOf("string");
+  expect(100).toBeTypeOf("number");
+});
+
+// passed
+test("toEqual", () => {
+  expect([1, 2, 3]).toEqual([1, 2, 3]);
+  expect(me).toEqual({ name: "Yukiro", age: 18 });
+});
+
+test.skip("skip test", () => {
+  // do something
+});
 ```
+
+## DOM 测试
+
+```javascript
+
+```
+
+## 组件测试
+
+## Mock 测试
+
+## Setup
+
+## 文章参考
+
+- [十分鐘上手前端單元測試 - 使用 Jest](https://www.casper.tw/development/2020/02/02/jest-intro/)
+- [vitest 体验（兼容 jest api）](https://zhuanlan.zhihu.com/p/450834753)

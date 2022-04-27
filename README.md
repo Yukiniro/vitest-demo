@@ -138,7 +138,7 @@ test.skip("skip test", () => {
 
 `vitest` 内置了对 `happy-dom` 和 `jsdom` 的支持，不过这两个库都需要额外安装，以 `happy-dom` 举例。首先是安装相关库。
 
-```
+```shell
 pnpm add happy-dom @testing-library/dom @testing-library/jest-dom -D
 ```
 
@@ -201,7 +201,65 @@ export default defineConfig({
 
 ## 组件测试
 
-## Mock 测试
+`vitest` 内置了对常用前端框架（`react`，`vue`等）的测试，假设已经在一个 `react` 项目中，需要按照下列库。
+
+```shell
+pnpm add happy-dom @testing-library/react @testing-library/jest-dom -D
+```
+
+`@testing-library/react` 提供了对 `react` 组件的测试支持，`@testing-library/jest-dom` 用于增强 `expect` 接口。
+
+```tsx
+import React from "react";
+
+interface ButtonProps {
+  text?: string;
+  onClick?: () => void;
+}
+
+function Button(props: ButtonProps) {
+  const { text, onClick } = props;
+  return <button onClick={onClick}>{text}</button>;
+}
+
+export default Button;
+```
+
+```tsx
+import React from "react";
+import { render, cleanup, screen } from "@testing-library/react";
+import { fireEvent, waitFor } from "@testing-library/dom";
+import { test, expect, afterEach, describe, vi } from "vitest";
+import matchers from "@testing-library/jest-dom/matchers";
+import Button from "../src/button";
+
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
+expect.extend(matchers);
+afterEach(cleanup);
+
+describe("Button", () => {
+  test("test text", () => {
+    const { rerender } = render(<Button text="button 1" />);
+    expect(screen.getByRole("button")).toHaveTextContent("button 1");
+    rerender(<Button text="button 2" />);
+    expect(screen.getByRole("button")).toHaveTextContent("button 2");
+  });
+
+  test("test onClick", async () => {
+    const onClickSpy = vi.fn(() => void 0);
+    render(<Button text="button" onClick={onClickSpy} />);
+    fireEvent.click(screen.getByRole("button"));
+    await waitFor(() => {
+      expect(onClickSpy).toHaveBeenCalled();
+    });
+  });
+});
+```
+
+- `globalThis.IS_REACT_ACT_ENVIRONMENT = true;` 用于消除 `react` 自带测试框架的警告
+- `afterEach(cleanup);` 用于在每个测试用例之后卸载组件
+- `render` 接口用于渲染待测试组件
 
 ## 文章参考
 

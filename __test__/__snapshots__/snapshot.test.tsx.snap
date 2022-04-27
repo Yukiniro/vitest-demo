@@ -1,0 +1,7 @@
+// Vitest Snapshot v1
+
+exports[`Button snapshot 1`] = `
+<button>
+  button
+</button>
+`;

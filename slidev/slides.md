@@ -9,7 +9,7 @@ class: "text-center"
 # https://sli.dev/custom/highlighters.html
 highlighter: shiki
 # show line numbers in code blocks
-lineNumbers: false
+lineNumbers: true
 
 drawings:
   persist: false
@@ -173,9 +173,7 @@ pnpm add vitest@latest -D
 layout: two-cols
 ---
 
-<v-click>
-
-```ts
+```ts {all|1|3-5|7,9,12,14,15,17|11,18|8,13,16|all}
 import { describe, test, expect } from "vitest";
 
 function sayHello() {
@@ -196,6 +194,10 @@ describe("test", () => {
 });
 ```
 
+<v-click>
+
+除了 toBe 外还有多个测试函数。详细文档参照 [API](https://vitest.dev/api/)。
+
 </v-click>
 
 ::right::
@@ -208,7 +210,7 @@ describe("test", () => {
 
 <v-click>
 
-```shell
+```shell {all|1|3|5-7|10|all}
 RERUN  __test__/1.test.ts
 
 √ __test__/1.test.ts (3)
@@ -222,6 +224,13 @@ PASS  Waiting for file changes...
 ```
 
 </v-click>
+
+<style>
+  .slidev-layout {
+    padding-left: 40px;
+    padding-right: 40px
+  }
+</style>
 
 ---
 layout: center
@@ -263,7 +272,7 @@ layout: center
 
 ---
 
-```ts
+```ts {all|3,26|5,7|6|10,12,15,18,21,25|6,11,16,17,22-24|all}
 import { test, expect, describe } from "vitest";
 
 describe("slidev-default", () => {
@@ -302,7 +311,7 @@ layout: center
 
 ---
 
-```ts
+```ts {all|1-3|5-7|9-14|15-29|16,21,26-28|all}
 /**
  * @vitest-environment happy-dom
  */
@@ -352,15 +361,6 @@ layout: center
 layout: two-cols
 ---
 
-<style>
-  .slidev-layout {
-    padding: 80px 10px;
-  }
-  .col-left, .col-right {
-  margin: 0 10px;
-}
-</style>
-
 ```ts
 import React from "react";
 
@@ -379,7 +379,7 @@ export default Button;
 
 ::right::
 
-```ts
+```ts {all|1,17|2,7|3|4|5|6|2-7|9,16|10|11|12|13-15|9-16|all}
 describe("Button", () => {
   test("test text", () => {
     const { rerender } = render(<Button text="button 1" />);
@@ -399,6 +399,15 @@ describe("Button", () => {
 });
 ```
 
+<style>
+  .slidev-layout {
+    padding: 80px 10px;
+  }
+  .col-left, .col-right {
+    margin: 0 10px;
+  }
+</style>
+
 ---
 layout: center
 ---
@@ -413,7 +422,7 @@ layout: center
 
 快照测试 1
 
-```ts
+```ts {all|1,4|2|3|all}
 test("Button snapshot", () => {
   render(<Button text="button 1" />);
   expect(screen.getByRole("button")).toMatchSnapshot();
@@ -434,7 +443,7 @@ test("Button snapshot", () => {
 
 快照测试 2
 
-```ts
+```ts {all|2|all}
 test("Button snapshot", () => {
   render(<Button text="button 2" />);
   expect(screen.getByRole("button")).toMatchSnapshot();
@@ -450,6 +459,36 @@ test("Button snapshot", () => {
   button 2
 </button>
 ```
+
+</v-click>
+
+---
+layout: center
+---
+
+```shell {all|1-9|11,12|14-17|all}
+FAIL  __test__/snapshot.test.tsx > button-snapshot
+AssertionError: Snapshot `button-snapshot 1` mismatched
+ ❯ __test__/snapshot.test.tsx:13:37
+     11| test("button-snapshot", () => {
+     12|   render(<Button text="button 2" />);
+     13|   expect(screen.getByRole("button")).toMatchSnapshot();
+       |                                     ^
+     14| });
+     15| 
+
+  - Expected  - 1
+  + Received  + 1
+  
+    "<button>
+  -   button 1
+  +   button 2
+    </button>"
+```
+
+<v-click>
+
+上述输出中可以看出具体的快照差异，当出现这种情况时一般由两种情况，首先查看测试用例是否过时，如果是的话需要执行 `npx vitest -u` 更新测试用例，如果测试用例没有问题的话就需要检查代码是否存在逻辑问题。
 
 </v-click>
 
@@ -485,7 +524,7 @@ npx vitest --coverage
 
 <v-click>
 
-```shell
+```shell {all|1-3|4-7|all}
 ------------|---------|----------|---------|---------|-------------------
 File        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
 ------------|---------|----------|---------|---------|-------------------
@@ -502,7 +541,9 @@ All files   |     100 |      100 |     100 |     100 |
 layout: center
 ---
 
-# 文章参考
+# 文章参考及工具
 
+- [vitest官网](https://vitest.dev/)
+- [在线调试](https://testing-playground.com/)
 - [十分鐘上手前端單元測試 - 使用 Jest](https://www.casper.tw/development/2020/02/02/jest-intro/)
 - [vitest 体验（兼容 jest api）](https://zhuanlan.zhihu.com/p/450834753)

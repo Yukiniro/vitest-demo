@@ -8,7 +8,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 expect.extend(matchers);
 
-test("Button snapshot", () => {
+test("button-snapshot", () => {
   render(<Button text="button" />);
   expect(screen.getByRole("button")).toMatchSnapshot();
 });

@@ -182,36 +182,254 @@ layout: center
 layout: center
 ---
 
+- 基本测试
+- DOM 测试
+- 组件测试
+- 快照测试
+
+<style>
+li {
+  font-size: 2.4rem;
+}
+</style>
+
+---
+layout: center
+---
+
 # 基本测试
+
+对基础函数、代码逻辑、单元模块进行测试
 
 ---
 
 ```ts
-import { test, expect } from "vitest";
+import { test, expect, describe } from "vitest";
 
-// passed
-test("toBeNull", () => {
-  expect(null).toBeNull();
-});
+describe("slidev-default", () => {
+  // passed
+  test("toBeNull", () => {
+    expect(null).toBeNull();
+  });
 
-// passed
-test("toBeNull", () => {
-  expect(true).not.toBeNull();
-});
+  // passed
+  test("toBeNull", () => {
+    expect(true).not.toBeNull();
+  });
 
-// passed
-test("toBeTypeOf", () => {
-  expect("Hello").toBeTypeOf("string");
-  expect(100).toBeTypeOf("number");
-});
+  // passed
+  test("toBeTypeOf", () => {
+    expect("Hello").toBeTypeOf("string");
+    expect(100).toBeTypeOf("number");
+  });
 
-// passed
-test("toEqual", () => {
-  expect([1, 2, 3]).toEqual([1, 2, 3]);
-  expect(me).toEqual({ name: "Yukiro", age: 18 });
-});
-
-test.skip("skip test", () => {
-  // do something
+  // passed
+  test("toEqual", () => {
+    expect([1, 2, 3]).toEqual([1, 2, 3]);
+    const person = { name: "Yukiro", age: 18 };
+    expect(person).toEqual({ name: "Yukiro", age: 18 });
+  });
 });
 ```
+
+---
+layout: center
+---
+
+# DOM 测试
+
+对 DOM 结构、样式等进行测试
+
+---
+
+<style>
+  .slidev-layout {
+    padding: 10px;
+  }
+</style>
+
+```ts
+/**
+ * @vitest-environment happy-dom
+ */
+
+import { Window } from "happy-dom";
+import { test, expect } from "vitest";
+import { getByText } from "@testing-library/dom";
+import matchers from "@testing-library/jest-dom/matchers";
+
+expect.extend(matchers);
+
+function sayHello(dom: Element) {
+  dom.innerHTML = "hello world";
+}
+
+const window = new Window();
+const document = window.document;
+document.body.innerHTML = '<div class="container"></div>';
+
+const container = document.querySelector(".container");
+sayHello(container as unknown as Element);
+test("sayHello toBe", () => {
+  expect(container.innerHTML).toBe("hello world");
+});
+
+test("sayHello toContainHTML", () => {
+  // toContainHTML 由 @testing-library/jest-dom/matchers 提供
+  expect(container).toContainHTML("hello world");
+});
+
+test("sayHello getByText", () => {
+  // getByText 由 @testing-library/dom 提供
+  expect(
+    getByText(container as unknown as HTMLElement, "hello world")
+  ).not.toBeEmptyDOMElement();
+});
+```
+
+---
+layout: center
+---
+
+# 组件测试
+
+对组件逻辑、渲染进行测试
+
+---
+layout: two-cols
+---
+
+<style>
+  .slidev-layout {
+    padding: 80px 10px;
+  }
+  .col-left, .col-right {
+  margin: 0 10px;
+}
+</style>
+
+```ts
+import React from "react";
+
+interface ButtonProps {
+  text?: string;
+  onClick?: () => void;
+}
+
+function Button(props: ButtonProps) {
+  const { text, onClick } = props;
+  return <button onClick={onClick}>{text}</button>;
+}
+
+export default Button;
+```
+
+::right::
+
+```ts
+describe("Button", () => {
+  test("test text", () => {
+    const { rerender } = render(<Button text="button 1" />);
+    expect(screen.getByRole("button")).toHaveTextContent("button 1");
+    rerender(<Button text="button 2" />);
+    expect(screen.getByRole("button")).toHaveTextContent("button 2");
+  });
+
+  test("test onClick", async () => {
+    const onClickSpy = vi.fn(() => void 0);
+    render(<Button text="button" onClick={onClickSpy} />);
+    fireEvent.click(screen.getByRole("button"));
+    await waitFor(() => {
+      expect(onClickSpy).toHaveBeenCalled();
+    });
+  });
+});
+```
+
+---
+layout: center
+---
+
+# 快照测试
+
+通过不同时间收集的快照进行测试
+
+---
+layout: center
+---
+
+快照测试 1
+
+```ts
+test("Button snapshot", () => {
+  render(<Button text="button 1" />);
+  expect(screen.getByRole("button")).toMatchSnapshot();
+});
+```
+
+```shell
+<button>
+  button 1
+</button>
+```
+
+快照测试 2
+
+```ts
+test("Button snapshot", () => {
+  render(<Button text="button 2" />);
+  expect(screen.getByRole("button")).toMatchSnapshot();
+});
+```
+
+```shell
+<button>
+  button 2
+</button>
+```
+
+---
+layout: center
+---
+
+# 测试覆盖率
+
+---
+
+`vitest` 的测试覆盖率输出需要安装 `c8`，通过下列命令进行安装
+
+```shell
+npm i c8 -D
+```
+
+or
+
+```shell
+pnpm add c8 -D
+```
+
+然后执行下列命令生成测试覆盖率
+
+```shell
+npx vitest --coverage	
+```
+
+```shell
+------------|---------|----------|---------|---------|-------------------
+File        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+------------|---------|----------|---------|---------|-------------------
+All files   |     100 |      100 |     100 |     100 |                   
+ basic.ts   |     100 |      100 |     100 |     100 |                   
+ button.tsx |     100 |      100 |     100 |     100 |                   
+ index.ts   |     100 |      100 |     100 |     100 |                   
+------------|---------|----------|---------|---------|-------------------
+```
+
+---
+layout: center
+---
+
+# 文章参考
+
+- [十分鐘上手前端單元測試 - 使用 Jest](https://www.casper.tw/development/2020/02/02/jest-intro/)
+- [vitest 体验（兼容 jest api）](https://zhuanlan.zhihu.com/p/450834753)
